@@ -32,3 +32,14 @@ Postgres:
 ```
 python consumer.py
 ```
+
+## Embedding pipeline
+
+Auto-creates a placeholder investigation case for any flagged transaction
+that doesn't have one yet, then embeds every case without an embedding
+(transaction summary + top SHAP features + analyst notes + outcome) into
+`case_embeddings` using `all-MiniLM-L6-v2`:
+
+```
+python embeddings.py
+```
