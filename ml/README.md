@@ -12,4 +12,7 @@ the backend's scoring service.
 3. `python train.py`
 
 Outputs `models/fraud_model.joblib` and `models/metrics.json` (precision,
-recall, F1, ROC-AUC for both the Logistic Regression baseline and XGBoost).
+recall, F1, ROC-AUC for both the Logistic Regression baseline and XGBoost,
+plus single-row inference latency for the XGBoost model -- mean/p95/max in
+milliseconds, approximating per-transaction scoring latency in the
+real-time consumer pipeline).

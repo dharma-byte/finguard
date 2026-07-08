@@ -8,6 +8,7 @@ richer dataset (e.g. IEEE-CIS) or a live feed with real account identifiers.
 """
 
 import json
+import time
 from pathlib import Path
 
 import joblib
@@ -76,6 +77,25 @@ def evaluate(model, X_test, y_test, name: str) -> dict:
     return metrics
 
 
+def measure_inference_latency(model, X_test: pd.DataFrame, n: int = 500) -> dict:
+    """Times single-row predict_proba calls to approximate the consumer's
+    per-transaction scoring latency in the real-time pipeline."""
+    sample = X_test.iloc[:n] if len(X_test) >= n else X_test
+    latencies_ms = []
+    for i in range(len(sample)):
+        row = sample.iloc[[i]]
+        start = time.perf_counter()
+        model.predict_proba(row)
+        latencies_ms.append((time.perf_counter() - start) * 1000)
+    latencies_ms.sort()
+    return {
+        "n_samples": len(latencies_ms),
+        "mean_ms": round(sum(latencies_ms) / len(latencies_ms), 4),
+        "p95_ms": round(latencies_ms[int(len(latencies_ms) * 0.95) - 1], 4),
+        "max_ms": round(latencies_ms[-1], 4),
+    }
+
+
 def main():
     df = engineer_features(load_data())
     X_train, X_val, X_test, y_train, y_val, y_test = split(df)
@@ -96,10 +116,17 @@ def main():
     xgb.fit(X_train, y_train, eval_set=[(X_val, y_val)], verbose=False)
     xgb_metrics = evaluate(xgb, X_test, y_test, "xgboost")
 
+    latency = measure_inference_latency(xgb, X_test)
+    print(f"\nInference latency (single-row predict_proba): {latency}")
+
     joblib.dump(xgb, MODEL_DIR / "fraud_model.joblib")
     with open(MODEL_DIR / "metrics.json", "w") as f:
         json.dump(
-            {"logistic_regression": baseline_metrics, "xgboost": xgb_metrics},
+            {
+                "logistic_regression": baseline_metrics,
+                "xgboost": xgb_metrics,
+                "xgboost_inference_latency_ms": latency,
+            },
             f,
             indent=2,
         )
