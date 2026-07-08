@@ -43,3 +43,17 @@ that doesn't have one yet, then embeds every case without an embedding
 ```
 python embeddings.py
 ```
+
+## Investigation API
+
+Requires `ANTHROPIC_API_KEY` in `.env`. Endpoints:
+
+- `GET /transactions/flagged` — list flagged transactions
+- `GET /transactions/{id}` — transaction detail
+- `POST /investigate` — `{"transaction_id": "...", "question": "..."}` runs
+  hybrid retrieval over similar past cases and returns an LLM investigation
+  summary that cites case IDs, plus the cited cases themselves
+
+```
+uvicorn app.main:app --reload
+```
