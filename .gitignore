@@ -12,6 +12,8 @@ env/
 *.pkl
 *.joblib
 *.model
+*.npy
+ml/models/
 data/*.csv
 !data/.gitkeep
 
