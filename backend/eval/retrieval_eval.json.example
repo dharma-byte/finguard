@@ -1,0 +1,10 @@
+[
+  {
+    "query": "large wire transfer to an offshore account flagged as suspicious",
+    "expected_case_ids": ["<case-uuid-1>", "<case-uuid-2>"]
+  },
+  {
+    "query": "multiple small transactions in a short window, card testing pattern",
+    "expected_case_ids": ["<case-uuid-3>"]
+  }
+]

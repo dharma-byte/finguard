@@ -67,3 +67,16 @@ search). No live Kafka/Postgres/model needed:
 ```
 pytest
 ```
+
+## Retrieval evaluation
+
+Measures precision@5 for the raw BM25+vector merge vs. the cross-encoder
+reranked results, per the guide's evaluation step. Requires seeded
+`investigation_cases` with `analyst_notes`/`outcome` (case IDs are visible
+via `psql` or the flagged-transactions endpoint once cases exist):
+
+```
+cp eval/retrieval_eval.json.example eval/retrieval_eval.json
+# fill in 20-30 real query / expected_case_ids pairs by hand
+python evaluate_retrieval.py
+```

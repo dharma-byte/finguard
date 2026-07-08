@@ -62,7 +62,7 @@ class Retriever:
         self.embedder = SentenceTransformer(EMBEDDING_MODEL_NAME)
         self.reranker = CrossEncoder(RERANKER_MODEL_NAME)
 
-    def retrieve(self, query: str, top_k: int = FINAL_TOP_K) -> list[dict]:
+    def retrieve(self, query: str, top_k: int = FINAL_TOP_K, rerank: bool = True) -> list[dict]:
         conn = get_connection()
         try:
             all_cases = fetch_all_cases(conn)
@@ -81,6 +81,18 @@ class Retriever:
         candidates = list(merged.values())
         if not candidates:
             return []
+
+        if not rerank:
+            return [
+                {
+                    "case_id": str(c["case_id"]),
+                    "transaction_id": str(c["transaction_id"]),
+                    "content": c["content"],
+                    "outcome": c["outcome"],
+                    "relevance_score": None,
+                }
+                for c in candidates[:top_k]
+            ]
 
         pairs = [[query, c["content"]] for c in candidates]
         rerank_scores = self.reranker.predict(pairs)
