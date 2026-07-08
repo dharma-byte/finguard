@@ -57,3 +57,13 @@ Requires `ANTHROPIC_API_KEY` in `.env`. Endpoints:
 ```
 uvicorn app.main:app --reload
 ```
+
+## Tests
+
+Covers feature extraction (producer message shape), the scoring function
+(consumer feature vector + SHAP ranking), and the retrieval function (BM25
+search). No live Kafka/Postgres/model needed:
+
+```
+pytest
+```
