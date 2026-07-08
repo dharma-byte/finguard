@@ -42,6 +42,7 @@ def to_message(idx: int, row: pd.Series, start_time: datetime) -> dict:
         "account_id": f"acct_{idx % NUM_SYNTHETIC_ACCOUNTS:04d}",
         "amount": float(row["Amount"]),
         "timestamp": (start_time + timedelta(seconds=float(row["Time"]))).isoformat(),
+        "time_offset_seconds": float(row["Time"]),
         "features": {col: float(row[col]) for col in FEATURE_COLS},
         "true_label": int(row["Class"]),
     }

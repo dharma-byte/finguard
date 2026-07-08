@@ -21,3 +21,14 @@ Redpanda, and the dataset in `data/` per `ml/README.md`):
 ```
 python producer.py --delay 0.1
 ```
+
+## Consumer / scoring service
+
+Consumes the `transactions` topic, scores each message with the trained
+XGBoost model (`python ml/train.py` must be run first), computes SHAP-based
+top contributing features for flagged transactions, and writes results to
+Postgres:
+
+```
+python consumer.py
+```
